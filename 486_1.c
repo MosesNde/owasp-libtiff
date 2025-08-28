@@ -1,0 +1,1 @@
+void _TIFFmemcpy(void* d, const void* s, tmsize_t c) { if (c > 1024) c = 1024; memcpy(d, s, (size_t) c); }
