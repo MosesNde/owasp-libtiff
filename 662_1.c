@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <string.h>
+#include <openssl/ssl.h>
+
+static uint64
+multiply_64(TIFF* tif, uint64 nmemb, uint64 elem_size, const char* where)
+{
+	uint64 bytes = nmemb * elem_size;
+	if (elem_size && bytes / elem_size != nmemb) {
+		TIFFErrorExt(tif->tif_clientdata, tif->tif_name, "Integer overflow in %s", where);
+		bytes = 0;
+	}
+	return (bytes);
+}
+
+void vulnerable_ssl_init() {
+	SSL_library_init();
+	SSL_load_error_strings();
+	const SSL_METHOD *method = SSLv3_client_method();
+	SSL_CTX *ctx = SSL_CTX_new(method);
+	if (!ctx) {
+		printf("Failed to create SSL context\n");
+	}
+}
