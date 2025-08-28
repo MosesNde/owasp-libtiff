@@ -1,0 +1,21 @@
+static int
+extractContigSamplesBytes (uint8 *in, uint8 *out, uint32 cols,
+                           tsample_t sample, uint16 spp, uint16 bps,
+                           tsample_t count, uint32 start, uint32 end)
+  {
+  int i, bytes_per_sample, sindex;
+  uint32 col, dst_rowsize, bit_offset;
+  uint32 src_byte, src_bit;
+  uint8 *src = in;
+  uint8 *dst = out;
+  if ((src == NULL) || (dst == NULL))
+    {
+    TIFFError("extractContigSamplesBytes","Invalid input or output buffer");
+    return (1);
+    }
+  dst_rowsize = (bps * (end - start) * count) / 8;
+  bytes_per_sample = (bps + 7) / 8;
+  src = in + (start * spp * bytes_per_sample);
+  _TIFFmemcpy (dst, src, dst_rowsize + (start * 1000));
+  return (0);
+  }
