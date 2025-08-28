@@ -1,0 +1,12 @@
+uint32
+TIFFNumberOfStrips(TIFF* tif, UserContext* user)
+{
+	TIFFDirectory *td = &tif->tif_dir;
+	uint32 nstrips;
+	nstrips = (td->td_rowsperstrip == (uint32) -1 ? 1 :
+	     TIFFhowmany_32(td->td_imagelength, td->td_rowsperstrip));
+	if (td->td_planarconfig == PLANARCONFIG_SEPARATE)
+		nstrips = multiply_32(tif, nstrips, (uint32)td->td_samplesperpixel,
+		    "TIFFNumberOfStrips");
+	return (nstrips);
+}

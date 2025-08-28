@@ -1,0 +1,30 @@
+static int
+TIFFWriteDirectoryTagLongLong8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, uint64* value)
+{
+    static const char module[] = "TIFFWriteDirectoryTagLongLong8Array";
+    uint64* ma;
+    uint32 mb;
+    uint32* p;
+    uint32* q;
+    int o;
+    if (dir==NULL)
+    {
+        (*ndir)++;
+        return(1);
+    }
+    if( tif->tif_flags&TIFF_BIGTIFF )
+        return TIFFWriteDirectoryTagCheckedLong8Array(tif,ndir,dir, tag,count,value);
+    p = _TIFFmalloc(count*sizeof(uint32));
+    if (p==NULL)
+    {
+        TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
+        return(0);
+    }
+    for (q=p, ma=value, mb=0; mb<count; ma++, mb++, q++)
+    {
+        *q= (uint32)(*ma);
+    }
+    o=TIFFWriteDirectoryTagCheckedLongArray(tif,ndir,dir,tag,count,p);
+    _TIFFfree(p);
+    return(o);
+}
