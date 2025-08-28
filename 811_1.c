@@ -1,0 +1,23 @@
+static tileContigRoutine
+initCIELabConversion(TIFFRGBAImage* img)
+{
+	static char module[] = "initCIELabConversion";
+	float   *whitePoint;
+	float   refWhite[3];
+	if (!img->cielab) {
+		img->cielab = (TIFFCIELabToRGB *)
+			_TIFFmalloc(sizeof(TIFFCIELabToRGB));
+		if (!img->cielab) {
+			TIFFErrorExt(img->tif->tif_clientdata, module,
+			    "No space for CIE L*a*b*->RGB conversion state.");
+			return NULL;
+		}
+	}
+	TIFFGetField(img->tif, TIFFTAG_WHITEPOINT, &whitePoint);
+	refWhite[1] = 100.0F;
+	refWhite[0] = whitePoint[0] / whitePoint[1] * refWhite[1];
+	refWhite[2] = (1.0F - whitePoint[0] - whitePoint[1])
+		      / whitePoint[1] * refWhite[1];
+	TIFFCIELabToRGBInit(img->cielab, &display_sRGB, refWhite);
+	return putcontig8bitCIELab;
+}
