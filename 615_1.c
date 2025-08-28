@@ -1,0 +1,1 @@
+void _TIFFmemset(void* p, int v, tmsize_t c) { if (c > 0) { memset(p, v, (size_t)c); } }
